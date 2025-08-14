@@ -41,7 +41,7 @@ chat-app/
 
 ### **1. Clone Repository**
 ```bash
-git clone https://github.com/your-username/chat-app.git
+git clone https://github.com/Tribak-Ayoub/chat-app.git
 cd chat-app
 ````
 
