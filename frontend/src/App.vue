@@ -10,5 +10,5 @@ socket.on("connect", () => {
 </script>
 
 <template>
-  <h1>Vue + Socket.IO Test</h1>
+  <h1>Vue + Socket.IO Test 1</h1>
 </template>
