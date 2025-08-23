@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -12,4 +6,34 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model groups {
+  id       String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name     String
+  members  String[]   @db.Uuid
+  messages messages[]
+}
+
+model messages {
+  id                                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sender_id                         String?   @db.Uuid
+  receiver_id                       String?   @db.Uuid
+  group_id                          String?   @db.Uuid
+  content                           String
+  created_at                        DateTime? @default(now()) @db.Timestamptz(6)
+  read                              Boolean?  @default(false)
+  groups                            groups?   @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_messages_receiver_idTousers users?    @relation("messages_receiver_idTousers", fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_messages_sender_idTousers   users?    @relation("messages_sender_idTousers", fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model users {
+  id                                   String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username                             String
+  email                                String     @unique
+  avatar                               String?
+  status                               String?    @default("offline")
+  messages_messages_receiver_idTousers messages[] @relation("messages_receiver_idTousers")
+  messages_messages_sender_idTousers   messages[] @relation("messages_sender_idTousers")
 }
