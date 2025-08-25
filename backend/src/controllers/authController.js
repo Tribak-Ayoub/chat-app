@@ -7,11 +7,17 @@ export const register = async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
+    // Check if email already exists
+    const existingUser = await prisma.users.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already in use" });
+    }
+
     // Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user in DB
-    const user = await prisma.user.create({
+    const user = await prisma.users.create({
       data: { username, email, password: hashedPassword },
     });
 
@@ -32,7 +38,7 @@ export const login = async (req, res) => {
 
   try {
     // Find user by email
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.users.findUnique({ where: { email } });
     if (!user) return res.status(404).json({ error: "User not found" });
 
     // Compare password with hashed version
