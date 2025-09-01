@@ -17,5 +17,19 @@ export const useUserStore = defineStore("user", {
       this.token = null;
       localStorage.removeItem("token");
     },
+    async fetchUser() {
+      if (!this.token) return;
+      try {
+        const res = await fetch("http://localhost:5000/api/me", {
+          headers: { Authorization: `Bearer ${this.token}` },
+        });
+        if (!res.ok) throw new Error("Failed to fetch user");
+        const data = await res.json();
+        this.user = data.user;
+      } catch (err) {
+        console.error("fetchUser error:", err);
+        this.logout(); // only logout if truly unauthorized
+      }
+    },
   },
 });
